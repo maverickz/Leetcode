@@ -34,12 +34,12 @@ def break_words(S, word_list):
     print T, len(S), len(T)
 
     end = len(S)
-    start = T[len(S)]
+    start = T[end]
     print start, end, S[start:end]
 
     while start > 0:
         end = start
-        start = T[start]
+        start = T[end]
         print start, end, S[start:end]
 
     return T[len(S)]
