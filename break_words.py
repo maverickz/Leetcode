@@ -1,3 +1,14 @@
+"""
+    Given a string s and a dictionary of words dict, determine if s can be 
+    segmented into a space-separated sequence of one or more dictionary words.
+
+    For example, given
+    s = "leetcode",
+    dict = ["leet", "code"].
+
+    Return true because "leetcode" can be segmented as "leet code".
+"""
+
 def break_words(S, word_list):
     T = [-1]*(len(S)+1)
     T[0] = 0
@@ -13,8 +24,8 @@ def break_words(S, word_list):
             if end > len(S):
                 continue
 
-            if T[end] > 0:
-                continue
+            # if T[end] > 0:
+            #     continue
 
             if S[i:end] == word:
                 print word, "matched"
@@ -22,23 +33,18 @@ def break_words(S, word_list):
 
     print T, len(S), len(T)
 
-    prev = len(S)
-    i = T[len(S)]
-    print i, prev, S[i:prev]
+    end = len(S)
+    start = T[len(S)]
+    print start, end, S[start:end]
 
-    while i > 0:
-        prev = i
-        i = T[i]
-        print i, prev, S[i:prev]
-
+    while start > 0:
+        end = start
+        start = T[start]
+        print start, end, S[start:end]
 
     return T[len(S)]
 
 S = "programcreek"
 word_list = ["programcree","program","creek"]
-
-
-
-
-print break_words(S, word_list), S[7:]
+break_words(S, word_list), S[7:]
 
