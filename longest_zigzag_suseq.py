@@ -58,12 +58,13 @@ def longest_zigzag_suseq(array):
 
 	for i in xrange(len(array)):
 		for j in xrange(i): 
-			if array[i] > array[j] and up[i] < down[j]:
-				up[i] = down[j] + 1
+			if array[i] > array[j]:
+				up[i] = max(down[j] + 1, up[i])
 				up_seq[i] = list(down_seq[j])
-			if array[j] > array[i] and down[i] < up[j]:
-				down[i] = up[j] + 1
+			if array[j] > array[i]:
+				down[i] = max(up[j] + 1, down[i])
 				down_seq[i] = list(up_seq[j])
+
 		up_seq[i].append(array[i])
 		down_seq[i].append(array[i])
 
