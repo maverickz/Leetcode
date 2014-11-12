@@ -1,18 +1,21 @@
-from llist import dllist
-import unittest
+from llist import dllist, dllistnode
 import logging
 import sys
+import copy
+from collections  import namedtuple
 
+logging.basicConfig(stream = sys.stderr)
+logging.getLogger("LRUCache_log").setLevel(logging.DEBUG)
+log = logging.getLogger("LRUCache_log")
 
-class LRUCache:
-    def __init__(self, log = None, size=2):
-        logging.basicConfig(stream = sys.stderr)
-        logging.getLogger("LRUCache_log").setLevel(logging.DEBUG)
-        _log = logging.getLogger("LRUCache_log")
-        _log.debug("LOG WORKS")
+Node = namedtuple('Node', 'key val')
+
+class Cache(object):
+    def __init__(self, logger = None, size = 2):
+        log = logger
         self._size = size
-        hash_map = {}
-        queue = dllist()
+        self._hash_map = {}
+        self._queue = dllist()
 
     @property 
     def size(self):
@@ -24,79 +27,90 @@ class LRUCache:
         self._size = value
 
     @property 
-    def log(self):
+    def hash_map(self):
         # Get the current hash size
-        return self._log
+        return self._hash_map
+
+    @property 
+    def queue(self):
+        # Get the current hash size
+        return self._queue
 
     def display_cache(self):
-        output = "Hashmap" + str(self.hash_map) + "Queue" + str(queue)
-        log.debug("%s" % output)
-        return "OUTPUT"
+        output = "Hashmap" + str(self._hash_map) + "_queue" + str(self._queue)
+        log.debug("Hashmap: %s, _queue: %s" % (self._hash_map, self._queue))
+
+    def cache_size(self):
+        """
+        Returns the number of entries currently in the cache
+        """
+        return len(self._hash_map)
 
     def is_cache_full(self):
-        return len(self.hash_map) == self.size
+        return self.cache_size() == self.size
 
     def add(self, key, value):
-        logging.basicConfig(stream = sys.stderr)
-        logging.getLogger("LRUCache_log").setLevel(logging.DEBUG)
-        log = logging.getLogger("LRUCache_log1")
-        log.debug("But not here")
-        if key in self.hash_map:
+        """
+        Add a Page identified by the key, value pair in the cache
+
+        """
+        # If the key already exists in the _hash_map move the node to the 
+        # front of the _queue and return
+        if key in self._hash_map:
             self.get(key)
             return
-        if is_cache_full():
-            old_node_key = self.queue.popleft()
-            del self.hash_map[old_node_key]
 
-        self.hash_map[key] = value
-        self.queue.appendright(key)
+        # If the cache is full, remove the first node in the _queue i.e
+        # the least referred node in the _queue and delete the corresponding
+        # entry in _hash_map
+        if self.is_cache_full():
+            old_node = self._queue.popleft()
+            old_node_key = old_node.key
+            del self._hash_map[old_node_key]
+
+        # Append the new node to the front of the queue and insert the list node
+        # object in the hash_map, so that the list node can be removed/deleted
+        # without the need for it's index in the list
+        # Note: 
+        # node: <class 'LRUCache.Node'>
+        # dlnode: <type 'llist.dllistnode'>
+        #
+        node = Node(key, value)
+        self._queue.appendright(node)
+        dlnode = self._queue.last
+        self._hash_map[key] = dlnode
 
     def get(self, key):
-        if key in self.hash_map:
-            self.queue.remove(key)
-            self.queue.appendright(key)
-            return node
+        """
+        Return the Page identified by the key, value pair if it exists in the cache
+
+        """
+        # If key exists in the hash_map return the node after updating its position
+        # in the queue i.e move it to the front of the queue
+        if key in self._hash_map:
+            dlnode = self._hash_map[key]
+            node = dlnode.value
+            new_node = Node(node.key, node.val)
+            self._queue.remove(dlnode)
+            # A new node is inserted as the old node has been removed from the queue
+            self._queue.appendright(new_node)
+            new_dlnode = self._queue.last
+            # Update the new node in the hash_map
+            self._hash_map[key] = new_dlnode
+            return new_node.val
         else:
             return None
 
-class BasicTest(unittest.TestCase):
-    cache = None
-    log = None
+    def peek(self, key):
+        """
+        Test utility function
+        Checks if a key exists in the hash_map
+        """
+        if key in self._hash_map:
+            return True
+        else:
+            return False
 
-    def setUp(self):
-        cache = LRUCache()
-        logging.basicConfig(stream = sys.stderr)
-        self.log = logging.getLogger("LRUCacheTest_log")
-
-        self.log.setLevel(logging.DEBUG)
-         
-        
-
-    def test_simple_add(self):
-        if self.cache:
-            key = 1
-            value = 10
-            cache.add(key,value)
-            cache.display_cache()
-            self.assertEqual(cache.get(key),value)
-
-    def test_multiple_add(self):
-        if self.cache:
-            keys = [2, 1]
-            values = [20, 10]
-            for key, value in zip(keys,values):
-                cache.add(key,value)
-                self.assertEqual(cache.get(key),value)
-            
-            print "Hello"
-            self.log.debug(cache.display_cache())
-            for key, value in zip(keys,values):
-                self.assertEqual(cache.get(key),value)
-
-if __name__ =='__main__':
-    logging.basicConfig(stream = sys.stderr)
-    logging.getLogger("LRUCache").setLevel(logging.DEBUG)
-    unittest.main()
 
 
 
