@@ -3,15 +3,19 @@
 #include <stdbool.h>
 #include <string.h>
 #include <limits.h>
+#include <sys/queue.h>
 
 #define MAX(a,b) (((a)>(b))?(a):(b))
 
+TAILQ_HEAD(tailhead, tree_node_s) head =
+     TAILQ_HEAD_INITIALIZER(head);
+struct tailhead *headp;
+
 typedef struct tree_node_s {
     int value;
-    int left_tree_size;
-    int right_tree_size;
     struct tree_node_s *left;
     struct tree_node_s *right;
+    TAILQ_ENTRY(tree_node_s) entries;
 } tree_node_t;
 
 int post_index = 0;
@@ -305,6 +309,40 @@ void display_array(int array[], int len)
     printf("\n");
 }
 
+void level_order_traversal(tree_node_t *root)
+{
+    if (root == NULL) {
+        return;
+    }
+     tree_node_t *curr_node = root;
+     TAILQ_INIT(&head);
+     TAILQ_INSERT_HEAD(&head, curr_node, entries);
+     int curr_level = 1;
+     int next_level = 0;
+     while (!TAILQ_EMPTY(&head)) {
+         curr_node = TAILQ_FIRST(&head);
+         TAILQ_REMOVE(&head, curr_node, entries);
+         printf("%d ", curr_node->value);
+         curr_level--;
+
+         if (curr_node->left) {
+            TAILQ_INSERT_TAIL(&head, curr_node->left, entries);
+            next_level++;
+         }
+
+         if (curr_node->right) {
+            TAILQ_INSERT_TAIL(&head, curr_node->right, entries);
+            next_level++;
+         }
+
+         if (curr_level == 0) {
+            curr_level = next_level;
+            next_level = 0;
+            printf("\n");
+         }
+     }
+}
+
 int main()
 {
 
@@ -363,5 +401,6 @@ int main()
     int median = kth_samllest_element(root, 3);
     printf("Median: %d\n", median);
 
+    level_order_traversal(root);
     return 0;
 }
