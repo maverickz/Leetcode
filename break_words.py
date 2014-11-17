@@ -54,5 +54,5 @@ def break_words(S, word_list):
 
 S = "programcreek"
 word_list = ["programcree","program","creek"]
-break_words(S, word_list), S[7:]
+print break_words(S, word_list), S[7:]
 
