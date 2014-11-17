@@ -4,6 +4,8 @@
 #include <string.h>
 #include <limits.h>
 
+#define MAX(a,b) (((a)>(b))?(a):(b))
+
 typedef struct tree_node_s {
     int value;
     int left_tree_size;
@@ -56,7 +58,7 @@ char **tokenize(char *buffer, int *num_tokens)
     return tokens;
 }
 
-tree_node_t *deserialize(tree_node_t *root, char **tokens, int num_tokens)
+tree_node_t *deserialize(char **tokens, int num_tokens)
 {
     static int token_index = 0;
     if (token_index >= num_tokens) {
@@ -68,8 +70,8 @@ tree_node_t *deserialize(tree_node_t *root, char **tokens, int num_tokens)
     } else {
         tree_node_t *node = calloc(1, sizeof(tree_node_t));
         node->value = atoi(tokens[token_index++]);
-        node->left = deserialize(root, tokens, num_tokens);
-        node->right = deserialize(root, tokens, num_tokens);
+        node->left = deserialize(tokens, num_tokens);
+        node->right = deserialize(tokens, num_tokens);
         return node;
     }
 }
@@ -248,11 +250,40 @@ bool compare(tree_node_t *T1, tree_node_t *T2)
     }
 }
 
-int kth_samllest_element(tree_node_t *root, int k)
+int count_nodes(tree_node_t *root)
 {
-
+    if (root == NULL) {
+        return 0;
+    } 
+    return (1 + count_nodes(root->left) + count_nodes(root->right));
 }
 
+int height(tree_node_t *root)
+{
+    if (root == NULL) {
+        return -1;
+    } else {
+        printf("LEFT: %d\n", height(root->left));
+        return (1 + MAX(height(root->left), height(root->right)));
+    }
+}
+
+int kth_samllest_element(tree_node_t *root, int k)
+{
+    if (root == NULL) {
+        return 0;
+    }
+    int left_tree_size = 0;
+    left_tree_size = count_nodes(root->left);
+
+    if (k == left_tree_size + 1) {
+        return root->value;
+    } else if (k <= left_tree_size) {
+        return kth_samllest_element(root->left, k);
+    } else {
+        return kth_samllest_element(root->right, k - left_tree_size - 1);
+    }
+}
 
 void display(tree_node_t *root, int array[], int n)
 {
@@ -293,36 +324,44 @@ int main()
     //     root = delete(root, sample_data[index]);
     // }
 
-    if (isBST(root, INT_MIN, INT_MAX)) {
-        printf("Valid BST\n");
-    } else {
-        printf("Not a BST\n");
-    }
-    inorder_array = calloc(1, len*sizeof(int));
-    array_len = serialize_inorder(root, inorder_array);
-    inorder_array = (int *)realloc(inorder_array, array_len*sizeof(int));
-    preorder_array = calloc(1, array_len*sizeof(int));
-    postorder_array = calloc(1, array_len*sizeof(int));
-    serialize_preorder(root, preorder_array);
-    serialize_postorder(root, postorder_array);
+    // if (isBST(root, INT_MIN, INT_MAX)) {
+    //     printf("Valid BST\n");
+    // } else {
+    //     printf("Not a BST\n");
+    // }
 
-    post_index = array_len-1;
-    tree_node_t *new_tree = deserialize_postorder(inorder_array, postorder_array, 0, array_len-1);
-    if (compare(root, new_tree)) {
-        printf("De-serialization works\n");
-    } else {
-        printf("Nah, its broken\n");
-    }
+    // int ht = height(root);
+    // printf("Height: %d\n", ht);
+
+    // inorder_array = calloc(1, len*sizeof(int));
+    // array_len = serialize_inorder(root, inorder_array);
+    // inorder_array = (int *)realloc(inorder_array, array_len*sizeof(int));
+    // preorder_array = calloc(1, array_len*sizeof(int));
+    // postorder_array = calloc(1, array_len*sizeof(int));
+    // serialize_preorder(root, preorder_array);
+    // serialize_postorder(root, postorder_array);
+
+    // post_index = array_len-1;
+    // tree_node_t *new_tree = deserialize_postorder(inorder_array, postorder_array, 0, array_len-1);
+    // if (compare(root, new_tree)) {
+    //     printf("De-serialization works\n");
+    // } else {
+    //     printf("Nah, its broken\n");
+    // }
+
 
     char *buffer = calloc(1, 256);
     serialize(root, buffer);
     int num_tokens = 0;
     char **tokens = tokenize(buffer, &num_tokens);
-    tree_node_t *new_root = deserialize(root, tokens, num_tokens);
-    if (compare(root, new_root)) {
-        printf("De-serialization works\n");
-    } else {
-        printf("Nah, its broken\n");
-    }
+    //tree_node_t *new_root = deserialize(tokens, num_tokens);
+    // if (compare(root, new_root)) {
+    //     printf("De-serialization works\n");
+    // } else {
+    //     printf("Nah, its broken\n");
+    // }
+    int median = kth_samllest_element(root, 3);
+    printf("Median: %d\n", median);
+
     return 0;
 }
