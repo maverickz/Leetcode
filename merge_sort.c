@@ -74,5 +74,4 @@ int main()
     print_array(array, len);
     merge_sort(array, 0, len - 1);
     print_array(array, len);
-
 }
