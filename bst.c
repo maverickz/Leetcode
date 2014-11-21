@@ -358,6 +358,7 @@ void dfs(tree_node_t *root)
     } else {
         return;
     }
+}
 
 tree_node_t *LCA(tree_node_t *root, int p, int q)
 {
@@ -492,7 +493,7 @@ int main()
 
     dfs(root);
     printf("\n");
-    level_order_traversal(root);
+    bfs(root);
     tree_node_t *node = LCA(root, 13, 14);
     if (node) {
         printf("LCA: %d\n", node->value);
