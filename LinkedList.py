@@ -86,6 +86,14 @@ class LinkedList(object):
             curr_node = curr_node.next_node
         print 'None'
 
+    def display_rev(self, node):
+        if not node:
+            return
+        else:
+            self.display_rev(node.next_node)
+            print node.value
+
+
 if __name__ == '__main__':
     list_obj = LinkedList()
     head = tail = None
@@ -98,6 +106,7 @@ if __name__ == '__main__':
         list_obj.delete(val)
         print 'Deleted', val
         list_obj.display()
+        list_obj.display_rev(list_obj.head)
 
 
 
