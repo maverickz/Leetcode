@@ -13,6 +13,7 @@ struct tailhead *headp;
 
 typedef struct tree_node_s {
     int value;
+    struct tree_node_s *parent;
     struct tree_node_s *left;
     struct tree_node_s *right;
     TAILQ_ENTRY(tree_node_s) entries;
@@ -164,16 +165,17 @@ tree_node_t *deserialize_postorder(int inorder_array[], int postorder_array[], i
     return node;
 }
 
-tree_node_t *insert(tree_node_t *root, int value)
+tree_node_t *insert(tree_node_t *root, tree_node_t *parent, int value)
 {
     if (root == NULL) {
         tree_node_t *new_node = calloc(1, sizeof(tree_node_t));
         new_node->value = value;
         root = new_node;
+        root->parent = parent;
     } else if (root->value > value) {
-        root->left = insert(root->left, value);
+        root->left = insert(root->left, root, value);
     } else {
-        root->right = insert(root->right, value);
+        root->right = insert(root->right, root, value);
     }
     return root;
 }
@@ -356,6 +358,78 @@ void dfs(tree_node_t *root)
     } else {
         return;
     }
+
+tree_node_t *LCA(tree_node_t *root, int p, int q)
+{
+    if (root == NULL) {
+        return NULL;
+    }
+
+    if (root->value == p || root->value == q) {
+        return root;
+    }
+
+    tree_node_t *LCA_left = LCA(root->left, p, q);
+    tree_node_t *LCA_right = LCA(root->right, p, q);
+
+    if (LCA_left && LCA_right) {
+        return root;
+    }
+    // either one of p,q is on one side OR p,q is not in L&R subtrees
+    return LCA_left ? LCA_left : LCA_right;
+}
+
+
+void swap_int(int *a, int *b)
+{
+    int tmp = *a;
+    *a = *b;
+    *b = tmp;
+}
+
+void swap_node(tree_node_t *a, tree_node_t *b)
+{
+    tree_node_t tmp = *a;
+    *a = *b;
+    *b = tmp;
+}
+
+
+int getHeight(tree_node_t *p) {
+  int height = 0;
+  while (p) {
+    height++;
+    p = p->parent;
+  }
+  return height;
+}
+ 
+// If we advance the deeper node dh steps above, both nodes would be at the same depth. 
+// Then, we advance both nodes one level at a time. They would then eventually intersect 
+// at one node, which is the LCA of both nodes. If not, one of the node would eventually 
+// reach NULL (root’s parent), which we conclude that both nodes are not in the same tree. 
+// However, that part of code shouldn’t be reached, since the problem statement assumed 
+// that both nodes are in the same tree.
+
+// As root->parent is NULL, we don't need to pass root in.
+tree_node_t *LCA_parent_ptr(tree_node_t *p, tree_node_t *q) {
+  int h1 = getHeight(p);
+  int h2 = getHeight(q);
+  // swap both nodes in case p is deeper than q.
+  if (h1 > h2) {
+    swap_int(&h1, &h2);
+    swap_node(p, q);
+  }
+  // invariant: h1 <= h2.
+  int dh = h2 - h1;
+  for (int h = 0; h < dh; h++)
+    q = q->parent;
+  while (p && q) {
+    if (p == q) return p;
+    p = p->parent;
+    q = q->parent;
+  }
+  return NULL;  // p and q are not in the same tree
 }
 
 int main()
@@ -370,7 +444,7 @@ int main()
     int *postorder_array = NULL;
     int array_len = 0;
     for (i = 0; i < len; i++) {
-        root = insert(root, sample_data[i]);
+        root = insert(root, NULL, sample_data[i]);
     }
     // for (i = 0; i < 4; i++) {
     //     int index = rand() % len;
@@ -418,5 +492,17 @@ int main()
 
     dfs(root);
     printf("\n");
+    level_order_traversal(root);
+    tree_node_t *node = LCA(root, 13, 14);
+    if (node) {
+        printf("LCA: %d\n", node->value);
+    }
+
+    tree_node_t *p = search(root, 1);
+    tree_node_t *q = search(root, 14);
+    tree_node_t *ancestor = LCA_parent_ptr(p,q);
+    if (ancestor) {
+        printf("LCA: %d\n", ancestor->value);
+    }
     return 0;
 }
