@@ -309,7 +309,7 @@ void display_array(int array[], int len)
     printf("\n");
 }
 
-void level_order_traversal(tree_node_t *root)
+void bfs(tree_node_t *root)
 {
     if (root == NULL) {
         return;
@@ -341,6 +341,21 @@ void level_order_traversal(tree_node_t *root)
             printf("\n");
          }
      }
+}
+
+void dfs(tree_node_t *root)
+{
+    if (root) {
+        if (root->left){
+            dfs(root->left); 
+        }
+        if (root->right) {
+            dfs(root->right);
+        }
+        printf("%d ", root->value);
+    } else {
+        return;
+    }
 }
 
 int main()
@@ -401,6 +416,7 @@ int main()
     int median = kth_samllest_element(root, 3);
     printf("Median: %d\n", median);
 
-    level_order_traversal(root);
+    dfs(root);
+    printf("\n");
     return 0;
 }
