@@ -5,7 +5,7 @@ import copy
 from collections  import namedtuple
 
 logging.basicConfig(stream = sys.stderr)
-logging.getLogger("LRUCache_log").setLevel(logging.DEBUG)
+logging.getLogger("LRUCache_log").setLevel(logging.INFO)
 log = logging.getLogger("LRUCache_log")
 
 Node = namedtuple('Node', 'key val')
@@ -49,7 +49,7 @@ class Cache(object):
     def is_cache_full(self):
         return self.cache_size() == self.size
 
-    def add(self, key, value):
+    def put(self, key, value):
         """
         Add a Page identified by the key, value pair in the cache
 
@@ -64,6 +64,7 @@ class Cache(object):
         # the least referred node in the _queue and delete the corresponding
         # entry in _hash_map
         if self.is_cache_full():
+            log.debug("Cache is full")
             old_node = self._queue.popleft()
             old_node_key = old_node.key
             del self._hash_map[old_node_key]

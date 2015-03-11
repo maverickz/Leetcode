@@ -24,7 +24,7 @@ class CacheTest(unittest.TestCase):
         if self.cache:
             key = 1
             value = 10
-            self.cache.add(key,value)
+            self.cache.put(key,value)
             self.cache.display_cache()
             self.assertEqual(self.cache.get(key),value)
             self.assertEqual(self.cache.cache_size(), 1)
@@ -34,7 +34,7 @@ class CacheTest(unittest.TestCase):
             keys = [2, 1]
             values = [20, 10]
             for key, value in zip(keys,values):
-                self.cache.add(key,value)
+                self.cache.put(key,value)
                 self.assertEqual(self.cache.get(key),value)
 
             self.cache.display_cache()
@@ -48,7 +48,7 @@ class CacheTest(unittest.TestCase):
             keys = [1, 1, 2, 1]
             values = [10, 10, 20, 10]
             for key, value in zip(keys,values):
-                self.cache.add(key,value)
+                self.cache.put(key,value)
                 self.assertEqual(self.cache.get(key),value)
 
             self.cache.display_cache()
@@ -72,7 +72,7 @@ class CacheTest(unittest.TestCase):
             curr_cache_size = self.cache.cache_size()
             loop = self.cache.size
             for _ in xrange(loop):
-                self.cache.add(key,value)
+                self.cache.put(key,value)
 
             new_cache_size = self.cache.cache_size()    
             self.assertEqual(curr_cache_size+1,new_cache_size)
@@ -94,20 +94,17 @@ class CacheTest(unittest.TestCase):
 
     def test_add_full_cache(self):
         if self.cache:
-            key_start = 0
-            val_start= 100
+            key_start = 1
+            val_start = 100
             num_entries = 10
-            set_cache_size = 5
+            cache_size = 5
 
-            test_set_cache_size(set_cache_size)
+            self.cache.size = self.cache_size = cache_size
             for key, value in zip(xrange(key_start,key_start+num_entries), xrange(val_start,val_start+num_entries)):
-                self.cache.add(key,value)
+                self.cache.put(key,value)
 
             new_cache_size = self.cache.cache_size()    
-            self.assertEqual(set_cache_size,new_cache_size)
-   
-            self.assertEqual(set_cache_size,new_cache_size)
-
+            self.assertEqual(cache_size,new_cache_size)
         else:
             log.error("Cache is NULL")
 
