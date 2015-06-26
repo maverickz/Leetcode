@@ -1,0 +1,21 @@
+DEBUG:LRUCache_log:Hashmap: {1: <dllistnode(Node(key=1, val=10))>}, _queue: dllist([Node(key=1, val=10)])
+Hashmap: {1: <dllistnode(Node(key=1, val=10))>}, _queue: dllist([Node(key=1, val=10)])
+.EDEBUG:LRUCache_log:Hashmap: {1: <dllistnode(Node(key=1, val=10))>, 2: <dllistnode(Node(key=2, val=20))>}, _queue: dllist([Node(key=2, val=20), Node(key=1, val=10)])
+Hashmap: {1: <dllistnode(Node(key=1, val=10))>, 2: <dllistnode(Node(key=2, val=20))>}, _queue: dllist([Node(key=2, val=20), Node(key=1, val=10)])
+.DEBUG:LRUCache_log:Hashmap: {}, _queue: dllist()
+Hashmap: {}, _queue: dllist()
+.DEBUG:LRUCache_log:Hashmap: {1: <dllistnode(Node(key=1, val=10))>, 2: <dllistnode(Node(key=2, val=20))>}, _queue: dllist([Node(key=2, val=20), Node(key=1, val=10)])
+Hashmap: {1: <dllistnode(Node(key=1, val=10))>, 2: <dllistnode(Node(key=2, val=20))>}, _queue: dllist([Node(key=2, val=20), Node(key=1, val=10)])
+...
+======================================================================
+ERROR: test_add_full_cache (__main__.CacheTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "LRUCacheTest.py", line 103, in test_add_full_cache
+    for key, value in zip(xrange(key_start,key_start+num_entries), xrange(val_start,val_start+num_entries)):
+NameError: global name 'key_start' is not defined
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.001s
+
+FAILED (errors=1)

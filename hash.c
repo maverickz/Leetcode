@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-typedef struct node {
+typedef struct node_t {
  char *word;
  struct node *next;
 } node;

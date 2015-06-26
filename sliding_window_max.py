@@ -1,22 +1,25 @@
 def sliding_window_max(array, window_size):
     if len(array) < window_size:
         return 
-    w = window_size
     queue = []
     front = 0
     back = -1
 
     for i in xrange(window_size):
         while queue and array[i] >= array[queue[back]]:
+            print queue
             queue.pop()
         queue.append(i)
+        print queue
 
     for i in xrange(window_size, len(array)):
         print array[queue[front]]
         while queue and queue[front] <= i - window_size:
+            print queue
             queue.pop(front)
-
+        print '*'*50
         while queue and array[i] > array[queue[back]]:
+            print queue
             queue.pop()
         queue.append(i)
     print array[queue[front]]
